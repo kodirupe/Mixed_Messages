@@ -17,8 +17,8 @@ const messageParts = {
     calculateTemperature(){
         this.temperature = Math.floor(Math.random() * 131); 
     },
-    calculateWindSpeed(){
-        this.windSpeed = Math.floor(Math.random() * 100);
+    calculateWindSpeed(){ //Skew the random number towards lower numbers
+        this.windSpeed = Math.floor(Math.pow(Math.random(),2)*100);
     },
     calculateWindDirection(){
         this.windDirection = windDirection[Math.floor(Math.random()*windDirection.length)];
@@ -32,15 +32,37 @@ const messageParts = {
     calculateAspects(){ //Calculates all of aspects of the message
         this.calculateDay();
         this.calculateTemperature();
-        this.calculateWindSpeed();
+        if(this.temperature < 32){ 
+            while(this.windSpeed > 50){ //Winds cannot be too fast for winter
+                this.calculateWindSpeed();
+            }
+        }else{
+            this.calculateWindSpeed();
+        }   
+
         this.calculateWindDirection();
-        this.calculatePrecipitation()
+        this.calculatePrecipitation();
+
+        if(this.temperature > 75 && this.windSpeed > 39){ //Tropical storm/Hurricane i.e must be raining
+            this.precipitation = 'Rain';
+        }else if(this.temperature > 32){ //Too hot to snow or sleet
+            while(this.precipitation === 'Snow' || this.precipitation === 'Sleet'){
+                this.calculatePrecipitation();
+            }
+        }else if(this.temperature < 32){ //Too cold to rain
+            while(this.precipitation === 'Rain'){
+                this.calculatePrecipitation();
+            }
+        }else{
+            this.calculatePrecipitation();
+        }
+
     },
     formMessage(){
         let msg =  `On ${this.day} the temperature will be ${this.temperature}.`;
         if(this.windSpeed < 39){
             msg += `There will be winds at ${this.windSpeed}MPH from the ${this.windDirection}.`;
-            
+            console.log(this.precipitation);
             switch(this.precipitation){ //Add precipitation to the message
                 case 'Rain': msg += 'It will also be raining.';
                 break;
@@ -62,7 +84,7 @@ const messageParts = {
 
             }
 
-        }else if(this.windSpeed > 39 && this.windSpeed < 74){ //Tropical storm, precipitation implied
+        }else if(this.windSpeed > 38 && this.windSpeed < 74){ //Tropical storm, precipitation implied
             
             msg += `There will be a tropical storm with sustained winds of ${this.windSpeed}MPH.`;
 
