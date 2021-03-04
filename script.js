@@ -53,10 +53,7 @@ const messageParts = {
             while(this.precipitation === 'Rain'){
                 this.calculatePrecipitation();
             }
-        }else{
-            this.calculatePrecipitation();
         }
-
     },
     formMessage(){
         let msg =  `On ${this.day} the temperature will be ${this.temperature}.`;
